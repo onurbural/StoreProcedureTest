@@ -18,7 +18,7 @@ VALUES
     (3, 'Cameras', 1),
     (4, 'Smart Phones', 2),
     (5, 'Lenses', 3),
-    (6, 'Glass', 5);
+    (6, 'Glass', 5),
     (7,'Laptop', 1);
 
 
