@@ -1,0 +1,65 @@
+-----------------
+--Create Db Query
+-----------------
+CREATE DATABASE ProcedurTest;
+
+USE ProcedurTest;
+
+CREATE TABLE Categories (
+    CategoryID INT PRIMARY KEY,
+    CategoryName NVARCHAR(50),
+    ParentCategoryID INT NULL
+);
+
+INSERT INTO Categories (CategoryID, CategoryName, ParentCategoryID)
+VALUES 
+    (1, 'Electronics', NULL),
+    (2, 'Phones', 1),
+    (3, 'Cameras', 1),
+    (4, 'Smart Phones', 2),
+    (5, 'Lenses', 3),
+    (6, 'Glass', 5);
+    (7,'Laptop', 1);
+
+
+
+------------------
+-DbProcedur Query-
+------------------
+CREATE PROCEDURE GetCategoryHierarchy
+AS
+BEGIN
+    WITH CategoryHierarchy AS
+    (
+        SELECT 
+            c.CategoryID,
+            c.CategoryName,
+            c.ParentCategoryID,
+            CAST(c.CategoryName AS NVARCHAR(MAX)) AS FullPath,
+            0 AS Level
+        FROM Categories c
+        WHERE c.ParentCategoryID IS NULL
+
+        UNION ALL
+
+        SELECT 
+            c.CategoryID,
+            c.CategoryName,
+            c.ParentCategoryID,
+            CAST(ch.FullPath + ' -> ' + c.CategoryName AS NVARCHAR(MAX)) AS FullPath,
+            ch.Level + 1
+        FROM Categories c
+        INNER JOIN CategoryHierarchy ch ON c.ParentCategoryID = ch.CategoryID
+    )
+    SELECT * FROM CategoryHierarchy
+    ORDER BY FullPath
+END;
+
+
+
+------------------
+-Execute Procedur-
+-------------------
+EXEC GetCategoryHierarchy;
+
+
