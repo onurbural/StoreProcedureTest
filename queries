@@ -61,5 +61,65 @@ END;
 -Execute Procedur-
 -------------------
 EXEC GetCategoryHierarchy;
+------------------
+
+
+
+
+
+
+*******
+
+
+USE ProcedurTest23
+
+CREATE PROCEDURE GetCategoryHierarchyWParams433
+    @CategoryID INT
+AS
+BEGIN
+    WITH CategoryHierarchy AS
+    (
+        SELECT 
+            c.CategoryID,
+            c.CategoryName,
+            c.ParentCategoryID,
+            CAST(c.CategoryName AS NVARCHAR(MAX)) AS FullPath, 
+            0 AS Level                                        
+        FROM Categories c
+        WHERE c.CategoryID = @CategoryID                      
+
+        UNION ALL
+
+        SELECT 
+            c.CategoryID,
+            c.CategoryName,
+            c.ParentCategoryID,
+            CAST(ch.FullPath + ' -> ' + c.CategoryName AS NVARCHAR(MAX)) AS FullPath, 
+            ch.Level + 1                                       
+        FROM Categories c
+        INNER JOIN CategoryHierarchy ch ON c.ParentCategoryID = ch.CategoryID
+    )
+    SELECT * FROM CategoryHierarchy
+    ORDER BY Level
+END;
+
+EXEC GetCategoryHierarchyWParams433 3;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*******
+
 
 
